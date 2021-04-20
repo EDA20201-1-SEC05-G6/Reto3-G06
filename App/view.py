@@ -24,6 +24,8 @@ import config as cf
 import sys
 import controller
 from DISClib.ADT import list as lt
+from DISClib.DataStructures import mapentry as me
+from DISClib.ADT import orderedmap as om
 assert cf
 
 
@@ -37,7 +39,13 @@ operación solicitada
 def printMenu():
     print("Bienvenido")
     print("1- Cargar información en el catálogo")
-    print("2- ")
+    print("2- Consultar eventos de escucha por caracteristicas de contenido en un rango determinado")
+    print("3- Consultar canciones por energía y bailabilidad en rangos determinados")
+    print("4- Consultar canciones por por instrumentalidad y tiempo en rangos determinados")
+    print("5- Consultar el número de canciones y artistas por género")
+    print("6- Consultar el ranking de generos más escuchado en un rango de horas junto con sus respectivos valores de sentimiento.")
+
+
 
 catalog = None
 
@@ -49,6 +57,8 @@ while True:
     inputs = input('Seleccione una opción para continuar\n')
     if int(inputs[0]) == 1:
         print("Cargando información de los archivos ....")
+
+        catalog = controller.loadCatalog(catalog)
 
     elif int(inputs[0]) == 2:
         pass

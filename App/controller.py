@@ -23,13 +23,40 @@
 import config as cf
 import model
 import csv
+from DISClib.ADT import list as lt
 
 
 """
 El controlador se encarga de mediar entre la vista y el modelo.
 """
 
-# Inicialización del Catálogo de libros
+# Inicialización del Catálogo
+
+def loadCatalog(catalog):
+
+    catalog = model.initcatalog()
+
+    user_track_hashtag_timestamp_file = cf.data_dir + "user_track_hashtag_timestamp-small.csv"
+    user_file = csv.DictReader(open(user_track_hashtag_timestamp_file, encoding="utf-8"),
+                                delimiter=",")
+    
+    context_content_features_file = cf.data_dir + "context_content_features-small.csv"
+    context_file = csv.DictReader(open(context_content_features_file, encoding="utf-8"),
+                                delimiter=",")
+
+    sentiment_values_file = cf.data_dir + "sentiment_values.csv"
+    sentiment_file = csv.DictReader(open( sentiment_values_file, encoding="utf-8"),
+                                delimiter=",")
+
+    for track in context_file:
+
+        model.addCancion(track, catalog)
+
+    return catalog
+
+
+
+    
 
 # Funciones para la carga de datos
 
