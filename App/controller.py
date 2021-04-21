@@ -24,6 +24,9 @@ import config as cf
 import model
 import csv
 from DISClib.ADT import list as lt
+from DISClib.ADT import map as mp
+from DISClib.DataStructures import mapentry as me
+from DISClib.ADT import orderedmap as om
 
 
 """
@@ -51,12 +54,16 @@ def loadCatalog(catalog):
     for track in context_file:
 
         model.addCancion(track, catalog)
+    
+    for Track in user_file:
+        
+        model.agregarHashtag(catalog, Track)
+
+    for hashtag in sentiment_file:
+
+        model.cargarSentiment(catalog, hashtag)
 
     return catalog
-
-
-
-    
 
 # Funciones para la carga de datos
 

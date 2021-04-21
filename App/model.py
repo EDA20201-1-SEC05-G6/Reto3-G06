@@ -81,9 +81,37 @@ def initcatalog():
 
                 "hashtags": mp.newMap(17634,
                                 maptype= "PROBING",
-                                loadfactor= 0.3)
+                                loadfactor= 0.3),
+
+                "artist_id": mp.newMap(maptype="PROBING", 
+                                loadfactor=0.3)
                 }
     
+    dic1 = catalog["generos-intervalos"]
+
+    mp.put(dic1, "Reggae", (60, 90))
+    mp.put(dic1, "Down-tempo", (70, 100))
+    mp.put(dic1, "Chill-out", (90, 120))
+    mp.put(dic1, "Hip-hop", (85, 115))
+    mp.put(dic1, "Jazz and Funk", (120, 125))
+    mp.put(dic1, "Pop", (100, 130))
+    mp.put(dic1, "R&B", (60, 80))
+    mp.put(dic1, "Rock", (110, 140))
+    mp.put(dic1, "Metal", (100, 160))
+
+    dic2 = catalog["intervalos-generos"]
+    om.put(dic2, 60, ("Reggae", "R&B"))
+    om.put(dic2, 70, ("Reggae", "R&B", "Down-tempo"))
+    om.put(dic2, 80, ("Reggae", "R&B", "Down-tempo"))
+    om.put(dic2, 90, ("Reggae", "Down-tempo", "Chill-out", "Hip-hop"))
+    om.put(dic2, 100, ("Down-tempo", "Chill-out", "Hip-hop", "Pop", "Metal"))
+    om.put(dic2, 110, ("Chill-out", "Hip-hop", "Pop", "Metal", "Rock"))
+    om.put(dic2, 120, ("Chill-out", "Pop", "Metal", "Rock", "Jazz and Funk"))
+    om.put(dic2, 130, ("Pop", "Metal", "Rock"))
+    om.put(dic2, 140, ("Metal", "Rock"))
+    om.put(dic2, 150, ("Metal"))
+    om.put(dic2, 160, ("Metal"))
+
     return catalog
 
 # Funciones para agregar informacion al catalogo
@@ -128,10 +156,41 @@ def addCancion(track, catalog):
     addkey(dic, catalog, pos)
     addtrack_id(dic, catalog, pos)
     addcreated_at(dic, catalog, pos)
+    addartist_id(dic, catalog, pos)
 
+def agregarHashtag (catalog, Track):
+    track_id = Track["track_id"]
+    fecha = Track["created_at"]
+    hashtag = Track["hashtag"]
 
+    dic = catalog["track_id"]
+
+    entry = mp.get(dic, track_id)
+
+    if entry != None:
+        referencias = me.getValue(entry)
+
+        canciones = catalog["lista_canciones"]
+
+        pos = 1
+        while pos <= lt.size(referencias):
+            referencia = lt.getElement(referencias, pos)
+            cancion = lt.getElement(canciones, referencia)
+            
+            if fecha == cancion["created_at"]:
+                cancion["hashtag"] = hashtag
+                pos = lt.size(referencias) + 1
+
+            else: pos += 1
     
+    else: pass
 
+def cargarSentiment (catalog, hashtag):
+    mapa = catalog["hashtags"]
+    Hashtag = hashtag["hashtag"]
+    promedio = hashtag["vader_avg"]
+
+    mp.put(mapa, Hashtag, promedio)
 
 
 # Funciones para creacion de datos
@@ -327,6 +386,22 @@ def addtrack_id(dic, catalog, pos):
         track_id = dic["track_id"]
         mp.put(catalog["track_id"], track_id, lt.newList(datastructure="SINGLE_LINKED"))
         entry = mp.get(od, track_id)
+        lista = me.getValue(entry)
+        lt.addLast(lista, pos)
+
+def addartist_id(dic, catalog, pos):
+
+    od = catalog["artist_id"]
+    presencia = mp.contains(od, dic["artist_id"])
+
+    if presencia:
+        entry = mp.get(od, dic["artist_id"])
+        lista = me.getValue(entry)
+        lt.addLast(lista, pos) 
+    else:
+        artist_id = dic["artist_id"]
+        mp.put(catalog["artist_id"], artist_id, lt.newList(datastructure="SINGLE_LINKED"))
+        entry = mp.get(od, artist_id)
         lista = me.getValue(entry)
         lt.addLast(lista, pos)
 
