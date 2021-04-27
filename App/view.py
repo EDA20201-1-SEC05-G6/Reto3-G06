@@ -135,7 +135,7 @@ while True:
 
         resultado = controller.req2(catalog, minEnergy, maxEnergy, minDanceability, maxDanceability)
 
-        print("La energía está entre " + str(minEnergy) + " y " + str(maxEnergy) + " y la bailabilidad está entre " + str(minDanceability) + " y " + str(maxDanceability))
+        print("\nLa energía está entre " + str(minEnergy) + " y " + str(maxEnergy) + " y la bailabilidad está entre " + str(minDanceability) + " y " + str(maxDanceability))
         print("Total de pistas únicas encontradas: " + str(mp.size(resultado)))
 
         llaves = mp.keySet(resultado)
@@ -150,9 +150,30 @@ while True:
             print("Track " + str(i))
 
             print(track["track_id"] + " con energía " + str(track["energy"]) + " y bailabilidad " + str(track["danceability"]))
+    elif int(inputs[0]) == 4:
 
+        minInstrumentalness = float(input("Ingrese el valor inferior del intervalo que desea consultar para la categoría de instrumentalness ->"))
+        maxInstrumentalness = float(input("Ingrese el valor superior del intervalo que desea consultar para la categoría de instrumentalness -> "))
+        minTempo = float(input("Ingrese el valor inferior del intervalo que desea consultar para la categoría de tempo -> "))
+        maxTempo = float(input("Ingrese el valor superior del intervalo que desea consultar para la categoría de tempo -> "))
+        
+        output = controller.req3(catalog, minInstrumentalness, maxInstrumentalness, minTempo, maxTempo)
 
+        print("\nLa instrumentalidad está entre " + str(minInstrumentalness) + " y " + str(maxInstrumentalness) + " y el tempo está entre " + str(minTempo) + " y " + str(maxTempo))
+        print("Total de pistas únicas encontradas: " + str(mp.size(output)))
 
+        llaves = mp.keySet(output)
+
+        for i in range(1,6):
+            
+            n = random.randint(1, mp.size(output))
+
+            llave = lt.getElement(llaves, n)
+            track = me.getValue(mp.get(output, llave))
+
+            print("Track " + str(i))
+
+            print(track["track_id"] + " con instrumentalidad " + str(track["instrumentalness"]) + " y tempo " + str(track["tempo"]))
 
     else:
         sys.exit(0)

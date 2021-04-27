@@ -471,7 +471,7 @@ def req2(catalog, minEnergy, maxEnergy, minDanceability, maxDanceability):
     else:
         
         categoria =  "danceability"
-        catrgoia1 = "energy"
+        categoria1 = "energy"
         min = minEnergy
         max = maxEnergy
         llaves = om.keys(catalog["danceability"], minDanceability, maxDanceability)
@@ -494,7 +494,46 @@ def req2(catalog, minEnergy, maxEnergy, minDanceability, maxDanceability):
 
     return canciones
 
+def req3(catalog, minInstrumentalness, maxInstrumentalness, minTempo, maxTempo):
 
+    canciones = mp.newMap(maptype= "PROBING", loadfactor= 0.3)
+
+    rangoInstrumentalness = maxInstrumentalness - minInstrumentalness
+    rangoTempo = maxTempo - minTempo
+
+    if rangoTempo <= rangoInstrumentalness:
+
+        categoria =  "tempo"   
+        categoria1 = "instrumentalness"
+        min = minInstrumentalness
+        max = maxInstrumentalness    
+        llaves = om.keys(catalog["tempo"], minTempo, maxTempo)
+
+    else:
+        
+        categoria =  "instrumentalness"
+        categoria1 = "tempo"
+        min = minTempo
+        max = maxTempo
+        llaves = om.keys(catalog["instrumentalness"], minInstrumentalness, maxInstrumentalness)
+
+
+    for llave in lt.iterator(llaves):
+
+        entry = om.get(catalog[categoria], llave)
+        eventos = me.getValue(entry)
+
+        for evento in lt.iterator(eventos):
+
+            track = lt.getElement(catalog["lista_canciones"], evento)
+
+            category = track[categoria1]
+
+            if category >= min and category <= max:
+
+                mp.put(canciones, track["track_id"], track)
+
+    return canciones
 
 # Funciones utilizadas para comparar elementos dentro de una lista
 
