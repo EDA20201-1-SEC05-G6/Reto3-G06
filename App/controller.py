@@ -82,3 +82,7 @@ def req2(catalog, minEnergy, maxEnergy, minDanceability, maxDanceability):
 def req3(catalog, minInstrumentalness, maxInstrumentalness, minTempo, maxTempo):
 
     return model.req3(catalog, minInstrumentalness, maxInstrumentalness, minTempo, maxTempo)
+
+def req4(catalog, listaGeneros):
+
+    return model.req4(catalog, listaGeneros)

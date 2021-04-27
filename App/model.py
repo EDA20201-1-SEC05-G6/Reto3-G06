@@ -535,6 +535,54 @@ def req3(catalog, minInstrumentalness, maxInstrumentalness, minTempo, maxTempo):
 
     return canciones
 
+def req4(catalog, listaGeneros):
+
+    numEventos = 0
+    datos = lt.newList(datastructure= "SINGLE_LINKED")
+
+    for genero in listaGeneros:
+
+        numEventosGenero = 0
+        artistas = mp.newMap(maptype= "CHAINING")
+
+        entry = mp.get(catalog["generos-intervalos"], genero)
+
+        nombre = me.getKey(entry)
+        intervalo = me.getValue(entry)
+
+        llaves = om.keys(catalog["tempo"], intervalo[0], intervalo[1])
+
+        for llave in lt.iterator(llaves):
+
+            entry = om.get(catalog["tempo"], llave)
+
+            tracks = me.getValue(entry)
+
+            for referencia in lt.iterator(tracks):
+
+                track = lt.getElement(catalog["lista_canciones"], referencia)
+
+                numEventos += 1
+                numEventosGenero += 1
+                mp.put(artistas, track["artist_id"], None)
+        
+        sizeArtistas = mp.size(artistas)
+        top10 = lt.subList(mp.keySet(artistas), 1, 10)
+
+            
+        lt.addLast(datos, (nombre, numEventosGenero, sizeArtistas, top10))
+
+    return (numEventos, datos)
+
+
+       
+
+        
+        
+        
+
+
+
 # Funciones utilizadas para comparar elementos dentro de una lista
 
 # Funciones de ordenamiento

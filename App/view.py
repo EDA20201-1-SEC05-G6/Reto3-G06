@@ -150,6 +150,8 @@ while True:
             print("Track " + str(i))
 
             print(track["track_id"] + " con energía " + str(track["energy"]) + " y bailabilidad " + str(track["danceability"]))
+
+
     elif int(inputs[0]) == 4:
 
         minInstrumentalness = float(input("Ingrese el valor inferior del intervalo que desea consultar para la categoría de instrumentalness ->"))
@@ -174,6 +176,49 @@ while True:
             print("Track " + str(i))
 
             print(track["track_id"] + " con instrumentalidad " + str(track["instrumentalness"]) + " y tempo " + str(track["tempo"]))
+
+    elif int(inputs[0]) == 5:
+
+        print("¿Desea incorporar un género personalizado en su busqueda? ")
+        print("Si (1)")
+        print("No (2)")
+
+        opcion = input()
+
+        if opcion == "1":
+
+            nombreGenero = input("Ingrese el nombre de su nuevo género -> ")
+            min = float(input("Ingrese el limite inferior del intervalo de tempo que corresponde a su nuevo género -> "))
+            max = float(input("Ingrese el limite superior del intervalo de tempo que corresponde a su nuevo género -> "))
+
+            mp.put(catalog["generos-intervalos"], nombreGenero, (min, max))
+
+        generos = input("Ingrese los generos que desea consultar (separados por comas sin espacios) -> ")
+        listaGeneros = generos.split(",")
+
+        resultado = controller.req4(catalog, listaGeneros)
+
+        print("Total de eventos de escucha cargados: " + str(resultado[0]))
+
+        for elemento in lt.iterator(resultado[1]):
+
+            print("Genero: " + elemento[0])
+            tempo = me.getValue(mp.get(catalog["generos-intervalos"], elemento[0]))
+            print("Tempo: " + str(tempo[0]) + " - " + str(tempo[1]))
+            print("Numero de eventos de escucha para este genero: " + str(elemento[1])) 
+            print("Numero de artistas únicos para este genero: " + str(elemento[2]))
+            print("10 primeros artistas para este género: ")
+
+            for artista in lt.iterator(elemento[3]):
+
+                print(artista)
+
+            print("\n")
+        
+         
+
+    
+            
 
     else:
         sys.exit(0)
