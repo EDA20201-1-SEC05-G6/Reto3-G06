@@ -70,3 +70,11 @@ def loadCatalog(catalog):
 # Funciones de ordenamiento
 
 # Funciones de consulta sobre el catálogo
+
+def req1(caracteristica, catalog, min, max):
+
+    return model.req1(caracteristica, catalog, min, max)
+
+def req2(catalog, minEnergy, maxEnergy, minDanceability, maxDanceability):
+
+    return model.req2(catalog, minEnergy, maxEnergy, minDanceability, maxDanceability)

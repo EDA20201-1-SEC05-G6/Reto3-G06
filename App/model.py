@@ -31,7 +31,7 @@ from DISClib.ADT import map as mp
 from DISClib.DataStructures import mapentry as me
 from DISClib.Algorithms.Sorting import shellsort as sa
 from DISClib.ADT import orderedmap as om
-from datetime import datetime
+from datetime import time
 assert cf
 
 """
@@ -408,14 +408,18 @@ def addartist_id(dic, catalog, pos):
 def addcreated_at(dic, catalog, pos):
 
     od = catalog["created_at"]
-    presencia = om.contains(od, dic["created_at"])
+    fecha = dic["created_at"].split(" ")
+    hora = fecha[1]
+    hora1 = time.fromisoformat(hora)
+    presencia = om.contains(od, hora1)
+
 
     if presencia:
-        entry = om.get(od, dic["created_at"])
+        entry = om.get(od, hora1)
         lista = me.getValue(entry)
         lt.addLast(lista, pos) 
     else:
-        created_at = dic["created_at"]
+        created_at = hora1
         om.put(catalog["created_at"], created_at, lt.newList(datastructure="SINGLE_LINKED"))
         entry = om.get(od, created_at)
         lista = me.getValue(entry)
@@ -424,6 +428,73 @@ def addcreated_at(dic, catalog, pos):
 
 
 # Funciones de consulta
+
+def req1(caracteristica, catalog, min, max):
+
+    artistas = mp.newMap(maptype= "PROBING", loadfactor= 0.3)
+    canciones = mp.newMap(maptype= "PROBING", loadfactor= 0.3)
+    numEventos = 0
+
+    llaves = om.keys(catalog[caracteristica], min, max)
+
+    for llave in lt.iterator(llaves):
+
+        entry = om.get(catalog[caracteristica], llave)
+        eventos = me.getValue(entry)
+
+        for evento in lt.iterator(eventos):
+
+            
+            numEventos += 1
+
+            track = lt.getElement(catalog["lista_canciones"], evento)
+            mp.put(artistas, track["artist_id"], None)
+            mp.put(canciones, track["track_id"], None)
+
+    return (numEventos, mp.size(artistas), mp.size(canciones))
+
+def req2(catalog, minEnergy, maxEnergy, minDanceability, maxDanceability):
+
+    canciones = mp.newMap(maptype= "PROBING", loadfactor= 0.3)
+
+    rangoEnergy = maxEnergy - minEnergy
+    rangoDanceability = maxDanceability - minDanceability
+
+    if rangoEnergy <= rangoDanceability:
+
+        categoria =  "energy"   
+        categoria1 = "danceability"
+        min = minDanceability
+        max = maxDanceability    
+        llaves = om.keys(catalog["energy"], minEnergy, maxEnergy)
+
+    else:
+        
+        categoria =  "danceability"
+        catrgoia1 = "energy"
+        min = minEnergy
+        max = maxEnergy
+        llaves = om.keys(catalog["danceability"], minDanceability, maxDanceability)
+
+
+    for llave in lt.iterator(llaves):
+
+        entry = om.get(catalog[categoria], llave)
+        eventos = me.getValue(entry)
+
+        for evento in lt.iterator(eventos):
+
+            track = lt.getElement(catalog["lista_canciones"], evento)
+
+            category = track[categoria1]
+
+            if category >= min and category <= max:
+
+                mp.put(canciones, track["track_id"], track)
+
+    return canciones
+
+
 
 # Funciones utilizadas para comparar elementos dentro de una lista
 

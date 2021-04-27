@@ -27,6 +27,8 @@ from DISClib.ADT import list as lt
 from DISClib.ADT import map as mp
 from DISClib.DataStructures import mapentry as me
 from DISClib.ADT import orderedmap as om
+from datetime import time
+import random
 assert cf
 
 
@@ -110,50 +112,47 @@ while True:
             print ("user_id: " + str(dic["liveness"]))
             print ("id: " + str(dic["liveness"]) + "\n")
 
+
     elif int(inputs[0]) == 2:
-        print("\ninstrumentalness: ")
-        print("Altura: ", om.height(catalog["instrumentalness"]))
-        print("Número de elementos: ", om.size(catalog["instrumentalness"]), "\n")
-        
-        print("liveness: ")
-        print("Altura: ", om.height(catalog["liveness"]))
-        print("Número de elementos: ", om.size(catalog["liveness"]), "\n")
+       
+       caracteristica = input("Ingrese la característica de contenido que desea consultar -> ")
+       min = float(input("Ingrese el extremo inferior del intervalo que desea consultar -> "))
+       max = float(input("Ingrese el extremo superior del intervalo que desea consultar -> "))
 
-        print("speechiness: ")
-        print("Altura: ", om.height(catalog["speechiness"]))
-        print("Número de elementos: ", om.size(catalog["speechiness"]), "\n")
 
-        print("danceability: ")
-        print("Altura: ", om.height(catalog["danceability"]))
-        print("Número de elementos: ", om.size(catalog["danceability"]), "\n")
+       resultado = controller.req1(caracteristica, catalog, min, max)
 
-        print("valence: ")
-        print("Altura: ", om.height(catalog["valence"]))
-        print("Número de elementos: ", om.size(catalog["valence"]), "\n")
+       print("Numero de eventos de escucha encontrados: " + str(resultado[0]))
+       print("Numero de artistas únicos encontrados: " + str(resultado[1]))
+       print("Numero de canciones únicas encontradas: " + str(resultado[2]))
 
-        print("loudness: ")
-        print("Altura: ", om.height(catalog["loudness"]))
-        print("Número de elementos: ", om.size(catalog["loudness"]), "\n")
+    elif int(inputs[0]) == 3:
 
-        print("tempo: ")
-        print("Altura: ", om.height(catalog["tempo"]))
-        print("Número de elementos: ", om.size(catalog["tempo"]), "\n")
+        minEnergy = float(input("Ingrese el valor inferior del intervalo que desea consultar para la categoría de energy -> "))
+        maxEnergy = float(input("Ingrese el valor superior del intervalo que desea consultar para la categoría de energy -> "))
+        minDanceability = float(input("Ingrese el valor inferior del intervalo que desea consultar para la categoría de danceability -> "))
+        maxDanceability = float(input("Ingrese el valor superior del intervalo que desea consultar para la categoría de danceability -> "))
 
-        print("acousticness: ")
-        print("Altura: ", om.height(catalog["acousticness"]))
-        print("Número de elementos: ", om.size(catalog["acousticness"]), "\n")
+        resultado = controller.req2(catalog, minEnergy, maxEnergy, minDanceability, maxDanceability)
 
-        print("energy: ")
-        print("Altura: ", om.height(catalog["energy"]))
-        print("Número de elementos: ", om.size(catalog["energy"]), "\n")
+        print("La energía está entre " + str(minEnergy) + " y " + str(maxEnergy) + " y la bailabilidad está entre " + str(minDanceability) + " y " + str(maxDanceability))
+        print("Total de pistas únicas encontradas: " + str(mp.size(resultado)))
 
-        print("mode: ")
-        print("Altura: ", om.height(catalog["mode"]))
-        print("Número de elementos: ", om.size(catalog["mode"]), "\n")
+        llaves = mp.keySet(resultado)
 
-        print("key: ")
-        print("Altura: ", om.height(catalog["key"]))
-        print("Número de elementos: ", om.size(catalog["key"]), "\n")
+        for i in range(1,6):
+            
+            n = random.randint(1, mp.size(resultado))
+
+            llave = lt.getElement(llaves, n)
+            track = me.getValue(mp.get(resultado, llave))
+
+            print("Track " + str(i))
+
+            print(track["track_id"] + " con energía " + str(track["energy"]) + " y bailabilidad " + str(track["danceability"]))
+
+
+
 
     else:
         sys.exit(0)
