@@ -55,13 +55,13 @@ def loadCatalog(catalog):
 
         model.addCancion(track, catalog)
     
-    for Track in user_file:
-        
-        model.agregarHashtag(catalog, Track)
-
     for hashtag in sentiment_file:
 
         model.cargarSentiment(catalog, hashtag)
+
+    for Track in user_file:
+        
+        model.agregarHashtag(catalog, Track)
 
     return catalog
 
@@ -86,3 +86,7 @@ def req3(catalog, minInstrumentalness, maxInstrumentalness, minTempo, maxTempo):
 def req4(catalog, listaGeneros):
 
     return model.req4(catalog, listaGeneros)
+
+def req5(catalog, minimo, maximo):
+
+    return model.req5(catalog, minimo, maximo)

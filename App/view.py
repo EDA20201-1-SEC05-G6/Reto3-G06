@@ -40,7 +40,7 @@ operación solicitada
 """
 
 def printMenu():
-    print("Bienvenido")
+    print("\nBienvenido")
     print("0- Salir del programa")
     print("1- Cargar información en el catálogo")
     print("2- Consultar eventos de escucha por caracteristicas de contenido en un rango determinado")
@@ -112,6 +112,9 @@ while True:
             print ("user_id: " + str(dic["liveness"]))
             print ("id: " + str(dic["liveness"]) + "\n")
 
+            a = mp.keySet(me.getValue(mp.get(catalog["track_id"], "3d02f9fcad37e6bb227682761039498c"))[1])
+            for i in lt.iterator(a):
+                print(i)
 
     elif int(inputs[0]) == 2:
        
@@ -215,11 +218,36 @@ while True:
 
             print("\n")
         
-         
+    elif int(inputs[0]) == 6:
+        minimo = time.fromisoformat(input("Ingrese el limite inferior del intervalo de tiempo que desea consultar->"))
+        maximo = time.fromisoformat(input("Ingrese el limite superior del intervalo de tiempo que desea consultar->"))
 
-    
-            
+        output = controller.req5(catalog, minimo, maximo)
+
+        total = 0
+        for tupla in lt.iterator(output[0]):
+            total += tupla[1]
+
+        print("\nEntre " + str(minimo) + " y " + str(maximo) + " hay un total de " + str(total) + " reproducciones.")
+        print("\nTop Géneros\n")
+        
+        n = 0
+        for tupla in lt.iterator(output[0]):
+            n += 1
+            print("Top " + str(n) + ": " + tupla[0] + " con " + str(tupla[1]) + " reproducciones.")
+
+        print("\n" + lt.firstElement(output[0])[0] + " tiene " + str(output[1]) + " tracks únicos.")
+
+        print("Top 10 tracks:")
+
+        n = 0
+        for tupla in lt.iterator(output[2]):
+            n += 1
+            print("Top " + str(n) + " track: " + tupla[0] + " con " + str(tupla[1]) + " hashtags " + " y VADER = " + str(tupla[2]))
 
     else:
         sys.exit(0)
 sys.exit(0)
+
+#QUITAR PASO EXTRA FUNCION REQ5 DE HASHTAGS PARA PROMEDIO
+#REVISAR DISCREPANCIAS DE RESULTADOS REQ5 Y EJ

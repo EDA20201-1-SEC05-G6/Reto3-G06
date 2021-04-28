@@ -27,6 +27,7 @@
 
 import config as cf
 from DISClib.ADT import list as lt
+from DISClib.Algorithms.Sorting import mergesort as mg
 from DISClib.ADT import map as mp
 from DISClib.DataStructures import mapentry as me
 from DISClib.Algorithms.Sorting import shellsort as sa
@@ -77,8 +78,6 @@ def initcatalog():
                                         maptype= "PROBING",
                                         loadfactor= 0.3),
 
-                "intervalos-generos": om.newMap(omaptype= "RBT"),
-
                 "hashtags": mp.newMap(17634,
                                 maptype= "PROBING",
                                 loadfactor= 0.3),
@@ -98,19 +97,6 @@ def initcatalog():
     mp.put(dic1, "R&B", (60, 80))
     mp.put(dic1, "Rock", (110, 140))
     mp.put(dic1, "Metal", (100, 160))
-
-    dic2 = catalog["intervalos-generos"]
-    om.put(dic2, 60, ("Reggae", "R&B"))
-    om.put(dic2, 70, ("Reggae", "R&B", "Down-tempo"))
-    om.put(dic2, 80, ("Reggae", "R&B", "Down-tempo"))
-    om.put(dic2, 90, ("Reggae", "Down-tempo", "Chill-out", "Hip-hop"))
-    om.put(dic2, 100, ("Down-tempo", "Chill-out", "Hip-hop", "Pop", "Metal"))
-    om.put(dic2, 110, ("Chill-out", "Hip-hop", "Pop", "Metal", "Rock"))
-    om.put(dic2, 120, ("Chill-out", "Pop", "Metal", "Rock", "Jazz and Funk"))
-    om.put(dic2, 130, ("Pop", "Metal", "Rock"))
-    om.put(dic2, 140, ("Metal", "Rock"))
-    om.put(dic2, 150, ("Metal"))
-    om.put(dic2, 160, ("Metal"))
 
     return catalog
 
@@ -160,38 +146,24 @@ def addCancion(track, catalog):
 
 def agregarHashtag (catalog, Track):
     track_id = Track["track_id"]
-    fecha = Track["created_at"]
     hashtag = Track["hashtag"]
 
     dic = catalog["track_id"]
 
     entry = mp.get(dic, track_id)
+    entry2 = mp.get(catalog["hashtags"], hashtag)
 
-    if entry != None:
-        referencias = me.getValue(entry)
-
-        canciones = catalog["lista_canciones"]
-
-        pos = 1
-        while pos <= lt.size(referencias):
-            referencia = lt.getElement(referencias, pos)
-            cancion = lt.getElement(canciones, referencia)
-            
-            if fecha == cancion["created_at"]:
-                cancion["hashtag"] = hashtag
-                pos = lt.size(referencias) + 1
-
-            else: pos += 1
-    
-    else: pass
+    if entry != None and entry2 != None:
+        hashtags = me.getValue(entry)[1]
+        mp.put(hashtags, hashtag, None)
 
 def cargarSentiment (catalog, hashtag):
     mapa = catalog["hashtags"]
     Hashtag = hashtag["hashtag"]
-    promedio = hashtag["vader_avg"]
 
-    mp.put(mapa, Hashtag, promedio)
-
+    if hashtag["vader_avg"] != "":
+        promedio = float(hashtag["vader_avg"])
+        mp.put(mapa, Hashtag, promedio)
 
 # Funciones para creacion de datos
 
@@ -380,13 +352,13 @@ def addtrack_id(dic, catalog, pos):
 
     if presencia:
         entry = mp.get(od, dic["track_id"])
-        lista = me.getValue(entry)
+        lista = me.getValue(entry)[0]
         lt.addLast(lista, pos) 
     else:
         track_id = dic["track_id"]
-        mp.put(catalog["track_id"], track_id, lt.newList(datastructure="SINGLE_LINKED"))
+        mp.put(catalog["track_id"], track_id, (lt.newList(datastructure="SINGLE_LINKED"), mp.newMap(maptype="PROBING", loadfactor=0.3)))
         entry = mp.get(od, track_id)
-        lista = me.getValue(entry)
+        lista = me.getValue(entry)[0]
         lt.addLast(lista, pos)
 
 def addartist_id(dic, catalog, pos):
@@ -574,15 +546,140 @@ def req4(catalog, listaGeneros):
 
     return (numEventos, datos)
 
+def req5(catalog, minimo, maximo):
 
-       
+    dic = catalog["created_at"]
+    llaves = om.keys(dic, minimo, maximo)
+    global lista
+    lista = catalog["lista_canciones"]
+    generos = catalog["generos-intervalos"]
+    llavesGeneros = mp.keySet(generos)
+    
+    mapaGeneros = mp.newMap(numelements=13, loadfactor=0.3, maptype="PROBING")
 
+    for genero in lt.iterator(llavesGeneros):
+        mp.put(mapaGeneros, genero, lt.newList(datastructure="SINGLE_LINKED"))
+
+    for llave in lt.iterator(llaves):
+        entry = om.get(dic, llave)
+        referencias = me.getValue(entry)
+
+        for referencia in lt.iterator(referencias):
+            track = lt.getElement(lista, referencia)
+            
+            for genero in lt.iterator(llavesGeneros):
+                entry = mp.get(generos, genero)
+                intervalo = me.getValue(entry)
+
+                if track["tempo"] >= intervalo[0] and track["tempo"] <= intervalo[1]:
+                    entry = mp.get(mapaGeneros, genero)
+                    listaGenero = me.getValue(entry)
+                    lt.addLast(listaGenero, referencia)
+                
+    keys = mp.keySet(mapaGeneros)
+    listaTuplas = lt.newList(datastructure="ARRAY_LIST")
+
+    for key in lt.iterator(keys):
+        entry = mp.get(mapaGeneros, key)
+        Lst = me.getValue(entry)
+        tupla = (key, lt.size(Lst))
+        lt.addLast(listaTuplas, tupla)
+
+    mergeSort(listaTuplas, cmpfunction)
+
+    entry = mp.get(mapaGeneros, lt.firstElement(listaTuplas)[0])
+    lst0 = me.getValue(entry)
+    lst = lt.newList(datastructure="ARRAY_LIST")
+
+    for elemento in lt.iterator(lst0):
+        lt.addLast(lst, elemento)
+
+    global TrackId
+    TrackId = catalog["track_id"]
+    
+    eventosUnicos = mp.newMap(maptype="PROBING", loadfactor=0.3)
+
+    for referencia in lt.iterator(lst):
+        mp.put(eventosUnicos, lt.getElement(lista, referencia)["track_id"], None)
+
+    mergeSort(lst, cmpfunction2)
+
+    repetidos = lt.newList(datastructure="SINGLE_LINKED")
+    contador = 0
+    pos = 0
+    tracksVader = lt.newList(datastructure="SINGLE_LINKED")
+
+    while contador < 10 and pos <= lt.size(lst):
+        referencia = lt.getElement(lst, pos)
+        pos += 1
+        track_id = lt.getElement(lista, referencia)["track_id"]
+
+        if lt.isPresent(repetidos, track_id) == 0:
+            lt.addLast(repetidos, track_id)
+
+            entrada = mp.get(catalog["track_id"], track_id)
+            mapa = me.getValue(entrada)[1]
+
+            hashtagsTrack = mp.keySet(mapa)
+
+            contadorHashtags = 0
+            promedio = 0
+
+            for hashtag in lt.iterator(hashtagsTrack):
+                Entrada = mp.get(catalog["hashtags"], hashtag)
+                if Entrada != None:
+                    vader = me.getValue(Entrada)
+                    contadorHashtags += 1
+                    promedio += vader
         
-        
-        
+            if promedio != 0:
+                promedio /= contadorHashtags
+                info = (track_id, contadorHashtags, promedio)
+                lt.addLast(tracksVader, info)
+                contador += 1
 
-
+    return (listaTuplas, mp.size(eventosUnicos), tracksVader)
 
 # Funciones utilizadas para comparar elementos dentro de una lista
+def cmpfunction(tupla1, tupla2):
+
+    valor = None
+
+    elemento1 = tupla1[1]
+    elemento2 = tupla2[1]
+
+    if elemento1 > elemento2:
+        valor = True
+
+    else:
+        valor = False
+
+    return valor
+
+def cmpfunction2(pos1, pos2):
+    
+    valor = None
+
+    id1 = lt.getElement(lista, pos1)["track_id"]
+    id2 = lt.getElement(lista, pos2)["track_id"]
+
+    entry1 = mp.get(TrackId, id1)
+    valor1 = me.getValue(entry1)[1]
+    elemento1 = mp.size(valor1)
+
+    entry2 = mp.get(TrackId, id2)
+    valor2 = me.getValue(entry2)[1]
+    elemento2 = mp.size(valor2)
+
+    if elemento1 > elemento2:
+        valor = True
+
+    else:
+        valor = False
+
+    return valor
 
 # Funciones de ordenamiento
+def mergeSort(lista, cmpfunction):
+
+    mg.sort(lista, cmpfunction)
