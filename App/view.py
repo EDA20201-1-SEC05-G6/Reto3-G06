@@ -112,9 +112,6 @@ while True:
             print ("user_id: " + str(dic["liveness"]))
             print ("id: " + str(dic["liveness"]) + "\n")
 
-            a = mp.keySet(me.getValue(mp.get(catalog["track_id"], "3d02f9fcad37e6bb227682761039498c"))[1])
-            for i in lt.iterator(a):
-                print(i)
 
     elif int(inputs[0]) == 2:
        
@@ -157,7 +154,7 @@ while True:
 
     elif int(inputs[0]) == 4:
 
-        minInstrumentalness = float(input("Ingrese el valor inferior del intervalo que desea consultar para la categoría de instrumentalness ->"))
+        minInstrumentalness = float(input("Ingrese el valor inferior del intervalo que desea consultar para la categoría de instrumentalness -> "))
         maxInstrumentalness = float(input("Ingrese el valor superior del intervalo que desea consultar para la categoría de instrumentalness -> "))
         minTempo = float(input("Ingrese el valor inferior del intervalo que desea consultar para la categoría de tempo -> "))
         maxTempo = float(input("Ingrese el valor superior del intervalo que desea consultar para la categoría de tempo -> "))
@@ -249,5 +246,4 @@ while True:
         sys.exit(0)
 sys.exit(0)
 
-#QUITAR PASO EXTRA FUNCION REQ5 DE HASHTAGS PARA PROMEDIO
 #REVISAR DISCREPANCIAS DE RESULTADOS REQ5 Y EJ

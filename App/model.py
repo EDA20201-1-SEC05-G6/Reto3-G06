@@ -621,20 +621,17 @@ def req5(catalog, minimo, maximo):
             mapa = me.getValue(entrada)[1]
 
             hashtagsTrack = mp.keySet(mapa)
-
-            contadorHashtags = 0
             promedio = 0
 
             for hashtag in lt.iterator(hashtagsTrack):
                 Entrada = mp.get(catalog["hashtags"], hashtag)
                 if Entrada != None:
                     vader = me.getValue(Entrada)
-                    contadorHashtags += 1
                     promedio += vader
         
             if promedio != 0:
-                promedio /= contadorHashtags
-                info = (track_id, contadorHashtags, promedio)
+                promedio /= lt.size(hashtagsTrack)
+                info = (track_id, lt.size(hashtagsTrack), promedio)
                 lt.addLast(tracksVader, info)
                 contador += 1
 
