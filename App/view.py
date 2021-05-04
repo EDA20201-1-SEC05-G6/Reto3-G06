@@ -179,7 +179,6 @@ while True:
        print("Numero de canciones únicas encontradas: " + str(resultado[2]))
 
        stop_time = getTime()
-       print("prueba")
        stop_memory = getMemory()
        tracemalloc.stop()
 
@@ -223,7 +222,6 @@ while True:
             print(track["track_id"] + " con energía " + str(track["energy"]) + " y bailabilidad " + str(track["danceability"]))
 
         stop_time = getTime()
-        print("prueba")
         stop_memory = getMemory()
         tracemalloc.stop()
 
@@ -266,7 +264,6 @@ while True:
             print(track["track_id"] + " con instrumentalidad " + str(track["instrumentalness"]) + " y tempo " + str(track["tempo"]))
 
         stop_time = getTime()
-        print("prueba")
         stop_memory = getMemory()
         tracemalloc.stop()
 
@@ -321,7 +318,6 @@ while True:
             print("\n")
 
         stop_time = getTime()
-        print("prueba")
         stop_memory = getMemory()
         tracemalloc.stop()
 
@@ -365,7 +361,6 @@ while True:
             print("Top " + str(n) + " track: " + tupla[0] + " con " + str(tupla[1]) + " hashtags " + " y VADER = " + str(tupla[2]))
 
         stop_time = getTime()
-        print("prueba")
         stop_memory = getMemory()
         tracemalloc.stop()
 
