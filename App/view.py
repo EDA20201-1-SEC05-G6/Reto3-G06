@@ -27,10 +27,40 @@ from DISClib.ADT import list as lt
 from DISClib.ADT import map as mp
 from DISClib.DataStructures import mapentry as me
 from DISClib.ADT import orderedmap as om
-from datetime import time
+from datetime import time as t
 import random
 assert cf
+import time
+import tracemalloc
 
+def getTime():
+    """
+    devuelve el instante tiempo de procesamiento en milisegundos
+    """
+    return float(time.perf_counter()*1000)
+
+
+def getMemory():
+    """
+    toma una muestra de la memoria alocada en instante de tiempo
+    """
+    return tracemalloc.take_snapshot()
+
+
+def deltaMemory(start_memory, stop_memory):
+    """
+    calcula la diferencia en memoria alocada del programa entre dos
+    instantes de tiempo y devuelve el resultado en bytes (ej.: 2100.0 B)
+    """
+    memory_diff = stop_memory.compare_to(start_memory, "filename")
+    delta_memory = 0.0
+
+    # suma de las diferencias en uso de memoria
+    for stat in memory_diff:
+        delta_memory = delta_memory + stat.size_diff
+    # de Byte -> kByte
+    delta_memory = delta_memory/1024.0
+    return delta_memory
 
 """
 La vista se encarga de la interacción con el usuario
@@ -61,6 +91,14 @@ while True:
     inputs = input('Seleccione una opción para continuar\n')
     if int(inputs[0]) == 1:
         print("Cargando información de los archivos ....")
+
+        delta_time = -1.0
+        delta_memory = -1.0
+
+        tracemalloc.start()
+        start_time = getTime()
+        start_memory = getMemory()
+
 
         catalog = controller.loadCatalog(catalog)
         print("Total de eventos de escucha: ", lt.size(catalog["lista_canciones"]))
@@ -112,6 +150,14 @@ while True:
             print ("user_id: " + str(dic["liveness"]))
             print ("id: " + str(dic["liveness"]) + "\n")
 
+        stop_time = getTime()
+        stop_memory = getMemory()
+        tracemalloc.stop()
+
+        delta_time = stop_time - start_time
+        delta_memory = deltaMemory(start_memory, stop_memory)
+
+        print(str(delta_time) + " " + str(delta_memory))
 
     elif int(inputs[0]) == 2:
        
@@ -119,6 +165,12 @@ while True:
        min = float(input("Ingrese el extremo inferior del intervalo que desea consultar -> "))
        max = float(input("Ingrese el extremo superior del intervalo que desea consultar -> "))
 
+       delta_time = -1.0
+       delta_memory = -1.0
+
+       tracemalloc.start()
+       start_time = getTime()
+       start_memory = getMemory()
 
        resultado = controller.req1(caracteristica, catalog, min, max)
 
@@ -126,12 +178,31 @@ while True:
        print("Numero de artistas únicos encontrados: " + str(resultado[1]))
        print("Numero de canciones únicas encontradas: " + str(resultado[2]))
 
+       stop_time = getTime()
+       print("prueba")
+       stop_memory = getMemory()
+       tracemalloc.stop()
+
+       delta_time = stop_time - start_time
+       delta_memory = deltaMemory(start_memory, stop_memory)
+
+       print(str(delta_time) + " " + str(delta_memory))
+
+       
+
     elif int(inputs[0]) == 3:
 
         minEnergy = float(input("Ingrese el valor inferior del intervalo que desea consultar para la categoría de energy -> "))
         maxEnergy = float(input("Ingrese el valor superior del intervalo que desea consultar para la categoría de energy -> "))
         minDanceability = float(input("Ingrese el valor inferior del intervalo que desea consultar para la categoría de danceability -> "))
         maxDanceability = float(input("Ingrese el valor superior del intervalo que desea consultar para la categoría de danceability -> "))
+
+        delta_time = -1.0
+        delta_memory = -1.0
+
+        tracemalloc.start()
+        start_time = getTime()
+        start_memory = getMemory()
 
         resultado = controller.req2(catalog, minEnergy, maxEnergy, minDanceability, maxDanceability)
 
@@ -151,6 +222,16 @@ while True:
 
             print(track["track_id"] + " con energía " + str(track["energy"]) + " y bailabilidad " + str(track["danceability"]))
 
+        stop_time = getTime()
+        print("prueba")
+        stop_memory = getMemory()
+        tracemalloc.stop()
+
+        delta_time = stop_time - start_time
+        delta_memory = deltaMemory(start_memory, stop_memory)
+
+        print(str(delta_time) + " " + str(delta_memory))
+
 
     elif int(inputs[0]) == 4:
 
@@ -158,6 +239,13 @@ while True:
         maxInstrumentalness = float(input("Ingrese el valor superior del intervalo que desea consultar para la categoría de instrumentalness -> "))
         minTempo = float(input("Ingrese el valor inferior del intervalo que desea consultar para la categoría de tempo -> "))
         maxTempo = float(input("Ingrese el valor superior del intervalo que desea consultar para la categoría de tempo -> "))
+
+        delta_time = -1.0
+        delta_memory = -1.0
+
+        tracemalloc.start()
+        start_time = getTime()
+        start_memory = getMemory()
         
         output = controller.req3(catalog, minInstrumentalness, maxInstrumentalness, minTempo, maxTempo)
 
@@ -176,6 +264,16 @@ while True:
             print("Track " + str(i))
 
             print(track["track_id"] + " con instrumentalidad " + str(track["instrumentalness"]) + " y tempo " + str(track["tempo"]))
+
+        stop_time = getTime()
+        print("prueba")
+        stop_memory = getMemory()
+        tracemalloc.stop()
+
+        delta_time = stop_time - start_time
+        delta_memory = deltaMemory(start_memory, stop_memory)
+
+        print(str(delta_time) + " " + str(delta_memory))
 
     elif int(inputs[0]) == 5:
 
@@ -196,6 +294,13 @@ while True:
         generos = input("Ingrese los generos que desea consultar (separados por comas sin espacios) -> ")
         listaGeneros = generos.split(",")
 
+        delta_time = -1.0
+        delta_memory = -1.0
+
+        tracemalloc.start()
+        start_time = getTime()
+        start_memory = getMemory()
+
         resultado = controller.req4(catalog, listaGeneros)
 
         print("Total de eventos de escucha cargados: " + str(resultado[0]))
@@ -214,10 +319,27 @@ while True:
                 print(artista)
 
             print("\n")
+
+        stop_time = getTime()
+        print("prueba")
+        stop_memory = getMemory()
+        tracemalloc.stop()
+
+        delta_time = stop_time - start_time
+        delta_memory = deltaMemory(start_memory, stop_memory)
+
+        print(str(delta_time) + " " + str(delta_memory))
         
     elif int(inputs[0]) == 6:
-        minimo = time.fromisoformat(input("Ingrese el limite inferior del intervalo de tiempo que desea consultar->"))
-        maximo = time.fromisoformat(input("Ingrese el limite superior del intervalo de tiempo que desea consultar->"))
+        minimo = t.fromisoformat(input("Ingrese el limite inferior del intervalo de tiempo que desea consultar-> "))
+        maximo = t.fromisoformat(input("Ingrese el limite superior del intervalo de tiempo que desea consultar-> "))
+
+        delta_time = -1.0
+        delta_memory = -1.0
+
+        tracemalloc.start()
+        start_time = getTime()
+        start_memory = getMemory()
 
         output = controller.req5(catalog, minimo, maximo)
 
@@ -242,8 +364,17 @@ while True:
             n += 1
             print("Top " + str(n) + " track: " + tupla[0] + " con " + str(tupla[1]) + " hashtags " + " y VADER = " + str(tupla[2]))
 
+        stop_time = getTime()
+        print("prueba")
+        stop_memory = getMemory()
+        tracemalloc.stop()
+
+        delta_time = stop_time - start_time
+        delta_memory = deltaMemory(start_memory, stop_memory)
+
+        print(str(delta_time) + " " + str(delta_memory))
+
     else:
         sys.exit(0)
 sys.exit(0)
 
-#REVISAR DISCREPANCIAS DE RESULTADOS REQ5 Y EJ
