@@ -576,10 +576,9 @@ def req5(catalog, minimo, maximo):
                     listaGenero = me.getValue(entry)
                     lt.addLast(listaGenero, referencia)
                 
-    keys = mp.keySet(mapaGeneros)
     listaTuplas = lt.newList(datastructure="ARRAY_LIST")
 
-    for key in lt.iterator(keys):
+    for key in lt.iterator(llavesGeneros):
         entry = mp.get(mapaGeneros, key)
         Lst = me.getValue(entry)
         tupla = (key, lt.size(Lst))
